@@ -1,8 +1,4 @@
-using HCL_Hackathon_WebAPIators.Helpers;
-using HCL_Hackathon_WebAPlators.Data;
-using HCL_Hackathon_WebAPlators.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -10,9 +6,8 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 0. Register Database Engine with Connection Properties
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// 0. Fallback In-Memory Mock Service Registration
+builder.Services.AddDbContext<DbContextMock>(options => { });
 
 // 1. Configure JSON serialization settings to ignore circular references globally
 builder.Services.AddControllers().AddJsonOptions(options => {
@@ -33,12 +28,12 @@ builder.Services.AddAuthentication(options => {
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
         ValidateIssuer = false,
         ValidateAudience = false,
-        ClockSkew = TimeSpan.Zero // Enforces session token expiration immediately
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 // 3. Register your utility helper dependencies
-builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<HCL_Hackathon_WebAPIators.Helpers.JwtHelper>();
 builder.Services.AddEndpointsApiExplorer();
 
 // 4. Configure Swagger with a global JWT 'Authorize' lock button
@@ -79,10 +74,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAngular");      // 1. CORS runs first to handle preflight headers
-app.UseAuthentication();        // 2. Authentication extracts token claims
-app.UseAuthorization();         // 3. Authorization validates system role bounds
+app.UseCors("AllowAngular");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+// Temporary inline fallback classes to resolve dependencies until Person 1 delivers data models
+public class DbContextMock : Microsoft.EntityFrameworkCore.DbContext
+{
+    public Microsoft.EntityFrameworkCore.DbSet<User> Users { get; set; }
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string Role { get; set; } = "Customer";
+}
