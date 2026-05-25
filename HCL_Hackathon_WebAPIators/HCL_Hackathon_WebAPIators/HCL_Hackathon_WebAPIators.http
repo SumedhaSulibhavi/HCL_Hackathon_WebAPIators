@@ -1,0 +1,6 @@
+@HCL_Hackathon_WebAPIators_HostAddress = http://localhost:5007
+
+GET {{HCL_Hackathon_WebAPIators_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
