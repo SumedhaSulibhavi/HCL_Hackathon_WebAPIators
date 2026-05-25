@@ -1,0 +1,45 @@
+.order-page {
+  padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem; max-width: 1100px; margin: 0 auto;
+  h1 { font-family: Georgia, serif; color: #2c1810; margin: 0; }
+  .lead { color: #7a5c48; }
+  .empty {
+    background: #ffffff; border-radius: 12px; padding: 1.5rem;
+    border: 1px solid #efe5db; display: inline-block;
+  }
+}
+.layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
+@media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+.lines-card, .summary-card {
+  background: #ffffff; border-radius: 16px; padding: 1.25rem;
+  border: 1px solid #efe5db;
+}
+.lines-card ul { list-style: none; padding: 0; margin: 0; }
+.lines-card li {
+  display: grid; grid-template-columns: 1fr auto auto; gap: .75rem; align-items: center;
+  padding: .85rem 0; border-bottom: 1px solid #efe5db;
+}
+.info strong { display: block; color: #2c1810; }
+.meta { font-size: .78rem; color: #7a5c48; }
+.qty-row { display: flex; align-items: center; gap: .35rem; }
+.qty-row button {
+  width: 28px; height: 28px; border: 1px solid #d4c4b8; background: #fff; border-radius: 6px; cursor: pointer;
+}
+.line-total { font-weight: 600; color: #c45c26; }
+.remove { grid-column: 1 / -1; justify-self: start; border: none; background: none; color: #b33; cursor: pointer; font-size: .82rem; }
+.summary-card .row { display: flex; justify-content: space-between; margin: .5rem 0; color: #3d2318; }
+.summary-card .discount { color: #2a7a4b; }
+.summary-card .total { font-size: 1.15rem; margin-top: 1rem; padding-top: .75rem; border-top: 1px solid #efe5db; }
+.field { display: block; margin: 1rem 0; }
+.field span { display: block; font-weight: 600; font-size: .88rem; color: #3d2318; margin-bottom: .35rem; }
+.field input {
+  width: 100%; box-sizing: border-box; border: 1px solid #d4c4b8; border-radius: 8px; padding: .55rem;
+}
+.field small { display: block; margin-top: .25rem; color: #9a8070; font-size: .75rem; }
+.earn { font-size: .82rem; color: #7a5c48; }
+.btn-place {
+  width: 100%; margin-top: 1rem; border: none; background: #c45c26; color: #fff;
+  padding: .9rem; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer;
+  &:disabled { opacity: .6; }
+}
+.err { color: #b33; font-size: .88rem; }
+.ok { color: #2a7a4b; font-size: .88rem; }

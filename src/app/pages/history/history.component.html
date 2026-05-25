@@ -1,0 +1,35 @@
+<div class="page history-page">
+  <h1>Order history</h1>
+  @if (loading()) {
+    <p class="status">Loading…</p>
+  } @else if (error()) {
+    <p class="status error">{{ error() }}</p>
+  } @else if (orders().length === 0) {
+    <p class="status">No orders yet. <a routerLink="/">Start ordering</a></p>
+  } @else {
+    <div class="order-list">
+      @for (o of orders(); track o.id) {
+        <article class="order-card">
+          <div class="head">
+            <span class="id">#{{ o.id }}</span>
+            <span class="date">{{ o.orderDate | date:'medium' }}</span>
+            <span class="status" [attr.data-status]="o.status">{{ o.status }}</span>
+          </div>
+          <p class="amount">{{ o.amount | currency:'INR':'symbol':'1.0-0' }} · {{ o.pointsEarned }} pts earned</p>
+          @if (o.items?.length) {
+            <ul>
+              @for (item of o.items; track $index) {
+                <li>{{ item.productName }} ×{{ item.quantity }} — {{ item.lineTotal ?? item.unitPrice * item.quantity | currency:'INR':'symbol':'1.0-0' }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="item-hint">{{ o.itemCount ?? 1 }} item(s)</p>
+          }
+          <button type="button" class="btn-reorder" [disabled]="reordering() === o.id" (click)="quickReorder(o.id)">
+            {{ reordering() === o.id ? 'Reordering…' : 'Quick reorder' }}
+          </button>
+        </article>
+      }
+    </div>
+  }
+</div>
