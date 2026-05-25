@@ -1,0 +1,80 @@
+<div class="page home-page">
+  <section class="hero">
+    <p class="tagline">Our oven, your moment.</p>
+    <p class="sub">A symphony of crust, cusp, and sip.</p>
+  </section>
+
+  <section class="category-cards">
+    @for (cat of categories; track cat.id) {
+      <button type="button" class="cat-card" [class.active]="activeCategory() === cat.id" (click)="selectCategory(cat.id)">
+        <span class="icon">{{ cat.icon }}</span>
+        <span class="label">{{ cat.name }}</span>
+      </button>
+    }
+  </section>
+
+  <section id="menu-section" class="menu-panel">
+    <div class="toolbar">
+      <h2>{{ categoryLabel(activeCategory()) }}</h2>
+      <select [value]="sort()" (change)="onSortChange($any($event.target).value)">
+        <option value="popular">Most popular</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    @if (brands().length) {
+      <div class="brand-chips">
+        <button type="button" class="chip" [class.on]="!activeBrand()" (click)="selectBrand(null)">All brands</button>
+        @for (b of brands(); track b.id) {
+          <button type="button" class="chip" [class.on]="activeBrand() === b.id" (click)="selectBrand(b.id)">{{ b.name }}</button>
+        }
+      </div>
+    }
+
+    @if (loading()) {
+      <p class="status">Loading menu…</p>
+    } @else if (error()) {
+      <p class="status error">{{ error() }}</p>
+    } @else if (products().length === 0) {
+      <p class="status">Pick a category above or adjust filters.</p>
+    } @else {
+      <div class="product-grid">
+        @for (p of products(); track p.id) {
+          <article class="product-card">
+            <div class="card-visual" [attr.data-cat]="p.categoryId">
+              <span class="cat-badge">{{ p.categoryName }}</span>
+            </div>
+            <div class="card-body">
+              <h3>{{ p.name }}</h3>
+              <p class="brand">{{ p.brandName }}</p>
+              <p class="price">{{ p.price | currency:'INR':'symbol':'1.0-0' }}</p>
+              <p class="stock">In stock: {{ p.stockQuantity }}</p>
+              <div class="actions">
+                <button type="button" class="btn-add" (click)="addToCart(p)" [disabled]="p.stockQuantity < 1">+ Order</button>
+                <button type="button" class="btn-wish" [class.on]="wish.has(p.id)" (click)="toggleWish(p)" title="Wishlist">♥</button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="popular-section">
+    <h2>Recommended for you</h2>
+    <p class="hint">Based on what customers order most</p>
+    <div class="product-grid compact">
+      @for (p of popular(); track p.id) {
+        <article class="product-card mini">
+          <div class="card-body">
+            <h3>{{ p.name }}</h3>
+            <p class="price">{{ p.price | currency:'INR':'symbol':'1.0-0' }}</p>
+            <button type="button" class="btn-add" (click)="addToCart(p)">+</button>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</div>
