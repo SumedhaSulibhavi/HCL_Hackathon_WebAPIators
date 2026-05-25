@@ -1,0 +1,65 @@
+<div class="page order-page">
+  <h1>Checkout</h1>
+  <p class="lead">Combine pizza, drinks &amp; breads in one order.</p>
+
+  @if (cart.lines().length === 0 && !message()) {
+    <p class="empty">Your cart is empty. <a routerLink="/">Browse the menu</a></p>
+  }
+
+  @if (cart.lines().length) {
+    <div class="layout">
+      <section class="lines-card">
+        <h2>Order items</h2>
+        <ul>
+          @for (line of cart.lines(); track line.product.id) {
+            <li>
+              <div class="info">
+                <strong>{{ line.product.name }}</strong>
+                <span class="meta">{{ line.product.categoryName }} · {{ line.product.brandName }}</span>
+              </div>
+              <div class="qty-row">
+                <button type="button" (click)="cart.updateQty(line.product.id, line.quantity - 1)">−</button>
+                <span>{{ line.quantity }}</span>
+                <button type="button" (click)="cart.updateQty(line.product.id, line.quantity + 1)" [disabled]="line.quantity >= line.product.stockQuantity">+</button>
+              </div>
+              <span class="line-total">{{ line.product.price * line.quantity | currency:'INR':'symbol':'1.0-0' }}</span>
+              <button type="button" class="remove" (click)="cart.remove(line.product.id)">Remove</button>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <aside class="summary-card">
+        <h2>Order summary</h2>
+        <div class="row"><span>Subtotal</span><span>{{ cart.subtotal() | currency:'INR':'symbol':'1.0-0' }}</span></div>
+
+        <label class="field">
+          <span>Coupon code</span>
+          <input [(ngModel)]="couponCode" placeholder="e.g. HCLPIZZA10 or CRISP5" />
+          <small>HCLPIZZA10 = 10% off total · CRISP5 = ₹5 flat</small>
+        </label>
+        @if (couponDiscount()) {
+          <div class="row discount">Coupon −{{ couponDiscount() | currency:'INR':'symbol':'1.0-0' }}</div>
+        }
+
+        <label class="field">
+          <span>Loyalty points to redeem (min 10)</span>
+          <input type="number" [(ngModel)]="loyaltyRedeem" min="0" [max]="auth.loyaltyPoints()" step="10" />
+          <small>Available: {{ auth.loyaltyPoints() }} · 10 pts = ₹10 off</small>
+        </label>
+        @if (loyaltyDiscount()) {
+          <div class="row discount">Loyalty −{{ loyaltyDiscount() | currency:'INR':'symbol':'1.0-0' }}</div>
+        }
+
+        <div class="row total"><span>Total</span><strong>{{ total() | currency:'INR':'symbol':'1.0-0' }}</strong></div>
+        <p class="earn">You'll earn ~{{ pointsPreview() }} points on this order</p>
+
+        <button type="button" class="btn-place" [disabled]="placing()" (click)="placeOrder()">
+          {{ placing() ? 'Placing…' : 'Place order' }}
+        </button>
+        @if (error()) { <p class="err">{{ error() }}</p> }
+        @if (message()) { <p class="ok">{{ message() }} <a routerLink="/history">View history</a></p> }
+      </aside>
+    </div>
+  }
+</div>
